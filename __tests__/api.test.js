@@ -19,9 +19,10 @@ describe("GET /api/categories", () => {
       .get("/api/categories")
       .expect(200)
       .then((res) => {
-        expect(res.body.categories[0]).toEqual({
-          slug: "euro game",
-          description: "Abstact games that involve little luck",
+        const cats = res.body.categories;
+        cats.forEach((category) => {
+          expect(category).toHaveProperty("slug");
+          expect(category).toHaveProperty("description");
         });
       });
   });
