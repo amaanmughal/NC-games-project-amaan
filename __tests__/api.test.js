@@ -2,6 +2,7 @@ const request = require("supertest");
 const app = require("../app");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
+const endpoints = require("../endpoints.json");
 
 const db = require("../db/connection");
 
@@ -24,6 +25,17 @@ describe("GET /api/categories", () => {
           expect(category).toHaveProperty("slug");
           expect(category).toHaveProperty("description");
         });
+      });
+  });
+});
+
+describe("GET /api", () => {
+  test("status 200 - JSON describing all the available endpoints on my API", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((res) => {
+        expect(JSON.parse(res.body.endpoint)).toEqual(endpoints);
       });
   });
 });
