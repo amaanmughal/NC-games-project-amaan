@@ -17,7 +17,6 @@ exports.getReviewId = (req, res, next) => {
   let { review_id } = req.params;
   fetchReviewId(review_id)
     .then((data) => {
-      console.log(data);
       res.status(200).send({ review: data });
     })
     .catch((err) => next(err));

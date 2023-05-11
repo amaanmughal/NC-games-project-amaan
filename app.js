@@ -13,7 +13,9 @@ app.get("/api", getEndpoints);
 app.get("/api/review/:review_id", getReviewId);
 
 app.use((err, req, res, next) => {
-  res.status(404).send("review id does not exist");
+  if (err.status && err.msg) {
+    res.status(err.status).send({ msg: err.msg });
+  } else next(err);
 });
 
 module.exports = app;

@@ -65,7 +65,15 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/review/1000")
       .expect(404)
       .then((res) => {
-        expect(res.text).toBe("review id does not exist");
+        expect(JSON.parse(res.text)).toMatchObject({ msg: "Not found" });
+      });
+  });
+  test("status 400 - Bad request (endpoint does not exist)", () => {
+    return request(app)
+      .get("/api/review/nonsense")
+      .expect(400)
+      .then((res) => {
+        expect(JSON.parse(res.text)).toMatchObject({ msg: "Bad request" });
       });
   });
 });
