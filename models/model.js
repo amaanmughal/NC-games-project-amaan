@@ -6,11 +6,3 @@ exports.fetchCategories = () => {
     return result.rows;
   });
 };
-
-exports.fetchEndpoints = () => {
-  return fs.readFile("endpoints.json", "utf-8").then((result) => {
-    const jsObject = JSON.parse(result);
-    const makeJSON = JSON.stringify(jsObject);
-    return makeJSON;
-  });
-};

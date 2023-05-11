@@ -1,4 +1,5 @@
-const { fetchCategories, fetchEndpoints } = require("../models/model");
+const { fetchCategories } = require("../models/model");
+const fs = require("fs/promises");
 
 exports.getCategories = (req, res) => {
   fetchCategories().then((categories) => {
@@ -7,7 +8,7 @@ exports.getCategories = (req, res) => {
 };
 
 exports.getEndpoints = (req, res) => {
-  fetchEndpoints().then((data) => {
-    res.status(200).send({ data: data });
+  return fs.readFile("endpoints.json", "utf-8").then((result) => {
+    res.status(200).send({ endpoint: result });
   });
 };
