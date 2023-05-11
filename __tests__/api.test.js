@@ -39,3 +39,33 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe("GET /api/reviews/:review_id", () => {
+  test("status 200 - client has entered valid id", () => {
+    return request(app)
+      .get("/api/review/3")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.review).toMatchObject({
+          category: "social deduction",
+          created_at: "2021-01-18T10:01:41.251Z",
+          designer: "Akihisa Okui",
+          owner: "bainesface",
+          review_body: "We couldn't find the werewolf!",
+          review_id: 3,
+          review_img_url:
+            "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?w=700&h=700",
+          title: "Ultimate Werewolf",
+          votes: 5,
+        });
+      });
+  });
+  test("status 404 - Not found (endpoint does not exist)", () => {
+    return request(app)
+      .get("/api/review/1000")
+      .expect(404)
+      .then((res) => {
+        expect(res.text).toBe("review id does not exist");
+      });
+  });
+});
