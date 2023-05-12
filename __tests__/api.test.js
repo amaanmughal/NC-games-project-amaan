@@ -77,3 +77,16 @@ describe("GET /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe("GET /api/review", () => {
+  test("status 200 - JSON describing all the available endpoints on my API", () => {
+    return request(app)
+      .get("/api/review")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews[0].comment_count).toEqual(0);
+        expect(res.body.reviews[7].comment_count).toEqual(3);
+        expect(res.body.reviews[0]).not.toHaveProperty("review_body");
+      });
+  });
+});

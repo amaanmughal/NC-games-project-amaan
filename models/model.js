@@ -27,3 +27,41 @@ exports.fetchReviewId = (review_id) => {
       return rows[0];
     });
 };
+
+exports.fetchReviewArray = () => {
+  return db
+    .query(
+      "SELECT reviews.review_id, comments.body FROM reviews JOIN comments ON reviews.review_id = comments.review_id ORDER BY comments.review_id ASC"
+    )
+    .then((res) => {
+      let commentsArr = res.rows;
+
+      return db
+        .query("SELECT * FROM reviews ORDER BY created_at DESC")
+        .then((res) => {
+          let reviewsArrOne = res.rows;
+          for (let i = 0; i < reviewsArrOne.length; i++) {
+            reviewsArrOne[i].comment_count = [];
+          }
+          return reviewsArrOne;
+        })
+        .then((res) => {
+          let reviewsArr = res;
+          for (let i = 0; i < reviewsArr.length; i++) {
+            for (let j = 0; j < commentsArr.length; j++) {
+              if (commentsArr[j].review_id === reviewsArr[i].review_id) {
+                reviewsArr[i].comment_count.push(commentsArr[j].body);
+              }
+            }
+          }
+          return reviewsArr;
+        })
+        .then((res) => {
+          for (let i = 0; i < res.length; i++) {
+            res[i].comment_count = res[i].comment_count.length;
+            delete res[i].review_body;
+          }
+          return res;
+        });
+    });
+};

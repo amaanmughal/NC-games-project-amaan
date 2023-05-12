@@ -3,6 +3,7 @@ const {
   getCategories,
   getEndpoints,
   getReviewId,
+  getReviewArray,
 } = require("./controllers/controller");
 const app = express();
 
@@ -15,7 +16,9 @@ app.get("/api/review/:review_id", getReviewId);
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
-  } else next(err);
+  }
 });
+
+app.get("/api/review", getReviewArray);
 
 module.exports = app;
