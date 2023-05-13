@@ -1,4 +1,8 @@
-const { fetchCategories, fetchReviewId } = require("../models/model");
+const {
+  fetchCategories,
+  fetchReviewId,
+  fetchReviewArray,
+} = require("../models/model");
 const fs = require("fs/promises");
 
 exports.getCategories = (req, res) => {
@@ -13,6 +17,8 @@ exports.getEndpoints = (req, res, next) => {
   });
 };
 
+//// TICKET 4 ////
+
 exports.getReviewId = (req, res, next) => {
   let { review_id } = req.params;
   fetchReviewId(review_id)
@@ -20,4 +26,12 @@ exports.getReviewId = (req, res, next) => {
       res.status(200).send({ review: data });
     })
     .catch((err) => next(err));
+};
+
+//// TICKET 5 ////
+
+exports.getReviewArray = (req, res) => {
+  fetchReviewArray().then((data) => {
+    res.status(200).send({ reviews: data });
+  });
 };
