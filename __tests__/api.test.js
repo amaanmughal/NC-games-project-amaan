@@ -43,7 +43,7 @@ describe("GET /api", () => {
 describe("GET /api/reviews/:review_id", () => {
   test("status 200 - client has entered valid id", () => {
     return request(app)
-      .get("/api/review/3")
+      .get("/api/reviews/3")
       .expect(200)
       .then((res) => {
         expect(res.body.review).toMatchObject({
@@ -62,7 +62,7 @@ describe("GET /api/reviews/:review_id", () => {
   });
   test("status 404 - Not found (endpoint does not exist)", () => {
     return request(app)
-      .get("/api/review/1000")
+      .get("/api/reviews/1000")
       .expect(404)
       .then((res) => {
         expect(JSON.parse(res.text)).toMatchObject({ msg: "Not found" });
@@ -70,10 +70,45 @@ describe("GET /api/reviews/:review_id", () => {
   });
   test("status 400 - Bad request (endpoint does not exist)", () => {
     return request(app)
-      .get("/api/review/nonsense")
+      .get("/api/reviews/nonsense")
       .expect(400)
       .then((res) => {
         expect(JSON.parse(res.text)).toMatchObject({ msg: "Bad request" });
+      });
+  });
+});
+
+describe("GET /api/reviews", () => {
+  test("status 200 - objects in Reviews Array do not have review_body", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews[0]).not.toHaveProperty("review_body");
+      });
+  });
+  test("status 200 - sorted by created_at descending", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then((res) => {
+        const reviewsArr = res.body.reviews;
+        expect(reviewsArr).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("status 200 - object has the correct comment_count", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then((res) => {
+        let review = res.body.reviews;
+        let testReview = [];
+        review.forEach((obj) => {
+          if (obj.review_id === 2) {
+            testReview.push(obj);
+          }
+        });
+        expect(testReview[0].comment_count).toBe(3);
       });
   });
 });

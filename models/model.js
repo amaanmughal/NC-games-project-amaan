@@ -7,6 +7,8 @@ exports.fetchCategories = () => {
   });
 };
 
+//// TICKET 4 ////
+
 exports.fetchReviewId = (review_id) => {
   let newNum = parseInt(review_id);
   if (Number.isNaN(newNum)) {
@@ -25,5 +27,39 @@ exports.fetchReviewId = (review_id) => {
         });
       }
       return rows[0];
+    });
+};
+
+//// TICKET 5 ////
+
+exports.fetchReviewArray = () => {
+  return db
+    .query(`ALTER TABLE reviews DROP COLUMN IF EXISTS review_body;`)
+    .then(() => {
+      return db
+        .query(`SELECT * FROM reviews ORDER BY created_at DESC`)
+        .then((res) => {
+          let alteredReviews = res.rows;
+          return db
+            .query(
+              "SELECT reviews.review_id, comments.body FROM reviews JOIN comments ON reviews.review_id = comments.review_id"
+            )
+            .then((res) => {
+              let commentsArr = res.rows;
+              for (let i = 0; i < alteredReviews.length; i++) {
+                alteredReviews[i].comment_count = [];
+                for (let j = 0; j < commentsArr.length; j++) {
+                  if (
+                    commentsArr[j].review_id === alteredReviews[i].review_id
+                  ) {
+                    alteredReviews[i].comment_count.push(commentsArr[j].body);
+                  }
+                }
+                alteredReviews[i].comment_count =
+                  alteredReviews[i].comment_count.length;
+              }
+              return alteredReviews;
+            });
+        });
     });
 };
