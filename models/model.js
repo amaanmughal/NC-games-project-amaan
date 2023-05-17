@@ -34,32 +34,10 @@ exports.fetchReviewId = (review_id) => {
 
 exports.fetchReviewArray = () => {
   return db
-    .query(`ALTER TABLE reviews DROP COLUMN IF EXISTS review_body;`)
-    .then(() => {
-      return db
-        .query(`SELECT * FROM reviews ORDER BY created_at DESC`)
-        .then((res) => {
-          let alteredReviews = res.rows;
-          return db
-            .query(
-              "SELECT reviews.review_id, comments.body FROM reviews JOIN comments ON reviews.review_id = comments.review_id"
-            )
-            .then((res) => {
-              let commentsArr = res.rows;
-              for (let i = 0; i < alteredReviews.length; i++) {
-                alteredReviews[i].comment_count = [];
-                for (let j = 0; j < commentsArr.length; j++) {
-                  if (
-                    commentsArr[j].review_id === alteredReviews[i].review_id
-                  ) {
-                    alteredReviews[i].comment_count.push(commentsArr[j].body);
-                  }
-                }
-                alteredReviews[i].comment_count =
-                  alteredReviews[i].comment_count.length;
-              }
-              return alteredReviews;
-            });
-        });
+    .query(
+      `SELECT reviews.review_id, reviews.title, reviews.owner, reviews.category, reviews.created_at, reviews.review_img_url, reviews.designer, COUNT(comments.comment_id) AS comment_count, reviews.votes FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id ORDER BY reviews.created_at DESC`
+    )
+    .then((res) => {
+      return res.rows;
     });
 };

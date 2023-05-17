@@ -102,13 +102,14 @@ describe("GET /api/reviews", () => {
       .expect(200)
       .then((res) => {
         let review = res.body.reviews;
+        expect(review.length).toBe(13);
         let testReview = [];
         review.forEach((obj) => {
           if (obj.review_id === 2) {
             testReview.push(obj);
           }
         });
-        expect(testReview[0].comment_count).toBe(3);
+        expect(testReview[0].comment_count).toBe("3");
       });
   });
 });
