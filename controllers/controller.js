@@ -2,6 +2,10 @@ const {
   fetchCategories,
   fetchReviewId,
   fetchReviewArray,
+  fetchReviewComments,
+  insertComment,
+  fetchUpdatedReview,
+  fetchComments,
 } = require("../models/model");
 const fs = require("fs/promises");
 
@@ -35,3 +39,43 @@ exports.getReviewArray = (req, res) => {
     res.status(200).send({ reviews: data });
   });
 };
+
+//// TICKET 6 ////
+
+exports.getReviewComments = (req, res, next) => {
+  let { review_id } = req.params;
+  fetchReviewComments(review_id)
+    .then((data) => {
+      res.status(200).send({ comments: data });
+    })
+    .catch((err) => next(err));
+};
+
+//// TICKET 7 ////
+
+exports.requestComment = (req, res, next) => {
+  let { review_id } = req.params;
+  let { username } = req.body;
+  let { body } = req.body;
+  insertComment(review_id, username, body)
+    .then((comment) => {
+      res.status(201).send({ comment: comment });
+    })
+    .catch((err) => next(err));
+};
+
+//// TICKET 8 ////
+
+exports.patchUpdatedReview = (req, res, next) => {
+  console.log(req.params);
+  let { review_id } = req.params;
+  let { inc_votes } = req.body;
+  console.log(review_id, inc_votes);
+  fetchUpdatedReview(review_id, inc_votes)
+    .then((review) => {
+      res.status(200).send({ review: review });
+    })
+    .catch((err) => next(err));
+};
+
+//// ticket 9 ////
