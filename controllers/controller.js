@@ -67,10 +67,8 @@ exports.requestComment = (req, res, next) => {
 //// TICKET 8 ////
 
 exports.patchUpdatedReview = (req, res, next) => {
-  console.log(req.params);
   let { review_id } = req.params;
   let { inc_votes } = req.body;
-  console.log(review_id, inc_votes);
   fetchUpdatedReview(review_id, inc_votes)
     .then((review) => {
       res.status(200).send({ review: review });
@@ -79,3 +77,4 @@ exports.patchUpdatedReview = (req, res, next) => {
 };
 
 //// ticket 9 ////
+exports.deleteComment = (req, res, next) => {};

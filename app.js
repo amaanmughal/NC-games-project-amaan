@@ -7,6 +7,7 @@ const {
   getReviewComments,
   requestComment,
   patchUpdatedReview,
+  deleteComment,
 } = require("./controllers/controller");
 const app = express();
 app.use(express.json());
@@ -26,6 +27,9 @@ app.post("/api/reviews/:review_id/comments", requestComment);
 
 //// Ticket 8 ////
 app.patch("/api/reviews/:review_id", patchUpdatedReview);
+
+//// Ticket 9 ////
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.use((err, req, res, next) => {
   console.log(err);
