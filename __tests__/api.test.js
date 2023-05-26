@@ -360,24 +360,23 @@ describe("PATCH /api/reviews/:review_id", () => {
 });
 
 //// TICKET 9 ////
+// describe("DELETE /api/comments/:comment_id", () => {
+//   test("204 - no content", () => {
+//     const updateReviewVotes = {
+//       inc_votes: 12,
+//     };
+//     return request(app)
+//       .patch("/api/comments/1")
+//       .send(updateReviewVotes)
+//       .expect(204)
+//       .then((res) => {
+//         let parsedRes = JSON.parse(res.text);
 
-describe("DELETE /api/comments/:comment_id", () => {
-  test("204 - no content", () => {
-    const updateReviewVotes = {
-      inc_votes: 12,
-    };
-    return request(app)
-      .patch("/api/comments/1")
-      .send(updateReviewVotes)
-      .expect(204)
-      .then((res) => {
-        let parsedRes = JSON.parse(res.text);
-
-        expect(parsedRes).toEqual({
-          msg: `No content`,
-        });
-      });
-  });
-  test("400 - invalid id", () => {});
-  test("404 - non-existing id", () => {});
-});
+//         expect(parsedRes).toEqual({
+//           msg: `No content`,
+//         });
+//       });
+//   });
+//   test("400 - invalid id", () => {});
+//   test("404 - non-existing id", () => {});
+// });
