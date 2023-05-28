@@ -8,6 +8,7 @@ const {
   requestComment,
   patchUpdatedReview,
   deleteComment,
+  getUsers,
 } = require("./controllers/controller");
 const app = express();
 app.use(express.json());
@@ -31,8 +32,11 @@ app.patch("/api/reviews/:review_id", patchUpdatedReview);
 //// Ticket 9 ////
 app.delete("/api/comments/:comment_id", deleteComment);
 
+//// TICKET 10 ////
+app.get("/api/users", getUsers);
+
 app.use((err, req, res, next) => {
-  console.log(err);
+  // console.log(err);
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
   } else next(err);

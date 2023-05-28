@@ -360,23 +360,56 @@ describe("PATCH /api/reviews/:review_id", () => {
 });
 
 //// TICKET 9 ////
-// describe("DELETE /api/comments/:comment_id", () => {
-//   test("204 - no content", () => {
-//     const updateReviewVotes = {
-//       inc_votes: 12,
-//     };
-//     return request(app)
-//       .patch("/api/comments/1")
-//       .send(updateReviewVotes)
-//       .expect(204)
-//       .then((res) => {
-//         let parsedRes = JSON.parse(res.text);
 
-//         expect(parsedRes).toEqual({
-//           msg: `No content`,
-//         });
-//       });
-//   });
-//   test("400 - invalid id", () => {});
-//   test("404 - non-existing id", () => {});
-// });
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204 - no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then((res) => {
+        let code = res.statusCode;
+
+        expect(code).toEqual(204);
+      });
+  });
+  test("400 - invalid id", () => {
+    return request(app)
+      .delete("/api/comments/nonsense")
+      .expect(400)
+      .then((res) => {
+        let parsedRes = JSON.parse(res.text);
+        expect(parsedRes).toEqual({
+          msg: `Bad request`,
+        });
+      });
+  });
+  test("404 - non-existing id", () => {
+    return request(app)
+      .delete("/api/comments/6000")
+      .expect(404)
+      .then((res) => {
+        let parsedRes = JSON.parse(res.text);
+        expect(parsedRes).toEqual({
+          msg: `Not found`,
+        });
+      });
+  });
+});
+
+//// TICKET 10 ////
+
+describe("GET /api/users", () => {
+  test("status 200 - array of user objects showing username, name and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((res) => {
+        const users = res.body.users;
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+});

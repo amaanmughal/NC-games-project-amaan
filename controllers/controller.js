@@ -5,7 +5,8 @@ const {
   fetchReviewComments,
   insertComment,
   fetchUpdatedReview,
-  fetchComments,
+  fetchCommentToDelete,
+  fetchUsers,
 } = require("../models/model");
 const fs = require("fs/promises");
 
@@ -77,4 +78,18 @@ exports.patchUpdatedReview = (req, res, next) => {
 };
 
 //// ticket 9 ////
-exports.deleteComment = (req, res, next) => {};
+exports.deleteComment = (req, res, next) => {
+  let { comment_id } = req.params;
+  fetchCommentToDelete(comment_id)
+    .then(() => {
+      res.status(204).send({ msg: "No content" });
+    })
+    .catch((err) => next(err));
+};
+
+//// TICKET 10 ////
+exports.getUsers = (req, res) => {
+  fetchUsers().then((users) => {
+    res.status(200).send({ users: users });
+  });
+};

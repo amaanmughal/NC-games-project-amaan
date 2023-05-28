@@ -130,4 +130,36 @@ exports.fetchUpdatedReview = (id, votes) => {
       });
     });
 };
+
 //// TICKET 9 ////
+exports.fetchCommentToDelete = (id) => {
+  let newNum = parseInt(id);
+  if (Number.isNaN(newNum)) {
+    return Promise.reject({
+      status: 400,
+      msg: `Bad request`,
+    });
+  }
+  return db
+    .query(`SELECT * FROM comments WHERE comment_id = $1;`, [id])
+    .then(({ rows }) => {
+      if (rows[0] === undefined) {
+        return Promise.reject({
+          status: 404,
+          msg: `Not found`,
+        });
+      }
+      return db
+        .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [id])
+        .then(({ rows }) => {
+          return rows[0];
+        });
+    });
+};
+
+////Ticket 10////
+exports.fetchUsers = () => {
+  return db.query(`SELECT * FROM users`).then((result) => {
+    return result.rows;
+  });
+};
