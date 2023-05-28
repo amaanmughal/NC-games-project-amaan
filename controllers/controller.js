@@ -2,6 +2,11 @@ const {
   fetchCategories,
   fetchReviewId,
   fetchReviewArray,
+  fetchReviewComments,
+  insertComment,
+  fetchUpdatedReview,
+  fetchCommentToDelete,
+  fetchUsers,
 } = require("../models/model");
 const fs = require("fs/promises");
 
@@ -33,5 +38,58 @@ exports.getReviewId = (req, res, next) => {
 exports.getReviewArray = (req, res) => {
   fetchReviewArray().then((data) => {
     res.status(200).send({ reviews: data });
+  });
+};
+
+//// TICKET 6 ////
+
+exports.getReviewComments = (req, res, next) => {
+  let { review_id } = req.params;
+  fetchReviewComments(review_id)
+    .then((data) => {
+      res.status(200).send({ comments: data });
+    })
+    .catch((err) => next(err));
+};
+
+//// TICKET 7 ////
+
+exports.requestComment = (req, res, next) => {
+  let { review_id } = req.params;
+  let { username } = req.body;
+  let { body } = req.body;
+  insertComment(review_id, username, body)
+    .then((comment) => {
+      res.status(201).send({ comment: comment });
+    })
+    .catch((err) => next(err));
+};
+
+//// TICKET 8 ////
+
+exports.patchUpdatedReview = (req, res, next) => {
+  let { review_id } = req.params;
+  let { inc_votes } = req.body;
+  fetchUpdatedReview(review_id, inc_votes)
+    .then((review) => {
+      res.status(200).send({ review: review });
+    })
+    .catch((err) => next(err));
+};
+
+//// ticket 9 ////
+exports.deleteComment = (req, res, next) => {
+  let { comment_id } = req.params;
+  fetchCommentToDelete(comment_id)
+    .then(() => {
+      res.status(204).send({ msg: "No content" });
+    })
+    .catch((err) => next(err));
+};
+
+//// TICKET 10 ////
+exports.getUsers = (req, res) => {
+  fetchUsers().then((users) => {
+    res.status(200).send({ users: users });
   });
 };
