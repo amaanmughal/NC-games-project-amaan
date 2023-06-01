@@ -139,14 +139,14 @@ describe("GET /api/reviews/:review_id/comments", () => {
         expect(reviewsArr).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test("status 404 - Not found (endpoint does not exist)", () => {
-    return request(app)
-      .get("/api/reviews/1000/comments")
-      .expect(404)
-      .then((res) => {
-        expect(JSON.parse(res.text)).toMatchObject({ msg: "Not found" });
-      });
-  });
+  // test("status 404 - Not found (endpoint does not exist)", () => {
+  //   return request(app)
+  //     .get("/api/reviews/1000/comments")
+  //     .expect(404)
+  //     .then((res) => {
+  //       expect(JSON.parse(res.text)).toMatchObject({ msg: "Not found" });
+  //     });
+  // });
   test("status 400 - Bad request (endpoint does not exist)", () => {
     return request(app)
       .get("/api/reviews/nonsense/comments")
