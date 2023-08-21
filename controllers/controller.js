@@ -35,10 +35,15 @@ exports.getReviewId = (req, res, next) => {
 
 //// TICKET 5 ////
 
-exports.getReviewArray = (req, res) => {
-  fetchReviewArray().then((data) => {
-    res.status(200).send({ reviews: data });
-  });
+exports.getReviewArray = (req, res, next) => {
+  const { sort_by, category, order } = req.query;
+  fetchReviewArray(sort_by, category, order)
+    .then((data) => {
+      res.status(200).send({ reviews: data });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 //// TICKET 6 ////
@@ -93,3 +98,5 @@ exports.getUsers = (req, res) => {
     res.status(200).send({ users: users });
   });
 };
+
+//// TICKET 11 ////

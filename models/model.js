@@ -32,14 +32,43 @@ exports.fetchReviewId = (review_id) => {
 
 //// TICKET 5 ////
 
-exports.fetchReviewArray = () => {
-  return db
-    .query(
-      `SELECT reviews.review_id, reviews.title, reviews.owner, reviews.category, reviews.created_at, reviews.review_img_url, reviews.designer, COUNT(comments.comment_id) AS comment_count, reviews.votes FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id ORDER BY reviews.created_at DESC`
-    )
-    .then((res) => {
-      return res.rows;
+exports.fetchReviewArray = (
+  sort_by = "reviews.created_at",
+  category,
+  order = "DESC"
+) => {
+  if (sort_by !== "reviews.created_at") {
+    sort_by = `reviews.${sort_by}`;
+  }
+
+  const validSortQueries = [
+    "reviews.created_at",
+    "reviews.title",
+    "reviews.votes",
+  ];
+  const queryValues = [];
+
+  upperCaseOrder = order.toUpperCase();
+
+  if (!validSortQueries.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      msg: `Invalid sort query`,
     });
+  }
+
+  let queryStr = `SELECT reviews.review_id, reviews.title, reviews.owner, reviews.category, reviews.created_at, reviews.review_img_url, reviews.designer, COUNT(comments.comment_id) AS comment_count, reviews.votes FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id`;
+
+  if (category) {
+    queryStr += ` WHERE reviews.category = $1`;
+    queryValues.push(category);
+  }
+
+  queryStr += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${upperCaseOrder};`;
+
+  return db.query(queryStr, queryValues).then((res) => {
+    return res.rows;
+  });
 };
 
 //// TICKET 6 ////
@@ -58,12 +87,6 @@ exports.fetchReviewComments = (review_id) => {
       [review_id]
     )
     .then(({ rows }) => {
-      // if (rows.length === 0) {
-      //   return Promise.reject({
-      //     status: 404,
-      //     msg: `Not found`,
-      //   });
-      // }
       return rows;
     });
 };
