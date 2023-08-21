@@ -78,6 +78,8 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
+///// Ticket 5 + Ticket 11 /////
+
 describe("GET /api/reviews", () => {
   test("status 200 - objects in Reviews Array do not have review_body", () => {
     return request(app)
@@ -112,7 +114,52 @@ describe("GET /api/reviews", () => {
         expect(testReview[0].comment_count).toBe("3");
       });
   });
+  test("status 200 - return results with correct query", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews).toHaveLength(1);
+        res.body.reviews.forEach((review) => {
+          expect(review.category).toBe("dexterity");
+        });
+      });
+  });
+  test("status 200 - return results with correct query & sort by", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&sort_by=title")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews).toHaveLength(11);
+        expect(res.body.reviews[0].title).toBe("Ultimate Werewolf");
+        expect(res.body.reviews[10].title).toBe(
+          "A truly Quacking Game; Quacks of Quedlinburg"
+        );
+      });
+  });
+  test("status 200 - return results with correct query, sort by and order ascending", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&sort_by=votes&order=asc")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews).toHaveLength(11);
+        expect(res.body.reviews[10].votes).toBe(100);
+        expect(res.body.reviews[0].votes).toBe(5);
+      });
+  });
+  test("status 400 - return invalid sort query message", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&sort_by=nonsense")
+      .expect(400)
+      .then((res) => {
+        expect(JSON.parse(res.text)).toMatchObject({
+          msg: "Invalid sort query",
+        });
+      });
+  });
 });
+
+///// TICKET 6 /////
 
 describe("GET /api/reviews/:review_id/comments", () => {
   test("status 200 - client has entered valid id", () => {
@@ -139,14 +186,6 @@ describe("GET /api/reviews/:review_id/comments", () => {
         expect(reviewsArr).toBeSortedBy("created_at", { descending: true });
       });
   });
-  // test("status 404 - Not found (endpoint does not exist)", () => {
-  //   return request(app)
-  //     .get("/api/reviews/1000/comments")
-  //     .expect(404)
-  //     .then((res) => {
-  //       expect(JSON.parse(res.text)).toMatchObject({ msg: "Not found" });
-  //     });
-  // });
   test("status 400 - Bad request (endpoint does not exist)", () => {
     return request(app)
       .get("/api/reviews/nonsense/comments")
