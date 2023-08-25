@@ -93,8 +93,6 @@ exports.fetchReviewComments = (review_id) => {
 
 //// TICKET 7 ////
 
-//// Make query to table to see if username/id exists in table first
-
 exports.insertComment = (id, author, body) => {
   let newNum = parseInt(id);
   if (author === undefined || body === undefined) {
