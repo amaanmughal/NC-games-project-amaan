@@ -428,6 +428,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(404)
       .then((res) => {
         let parsedRes = JSON.parse(res.text);
+
         expect(parsedRes).toEqual({
           msg: `Not found`,
         });
@@ -448,6 +449,35 @@ describe("GET /api/users", () => {
           expect(user).toHaveProperty("username");
           expect(user).toHaveProperty("name");
           expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+});
+
+///// TICKET 17 ////
+
+describe("GET /api/users/:username", () => {
+  test("status 200 - array of user objects showing", () => {
+    return request(app)
+      .get("/api/users/mallionaire")
+      .expect(200)
+      .then((res) => {
+        const user = res.body.user;
+
+        expect(user).toHaveProperty("username");
+        expect(user).toHaveProperty("name");
+        expect(user).toHaveProperty("avatar_url");
+      });
+  });
+  test("404 - non-existing id", () => {
+    return request(app)
+      .get("/api/users/nonsense")
+      .expect(404)
+      .then((res) => {
+        let parsedRes = JSON.parse(res.text);
+
+        expect(parsedRes).toEqual({
+          msg: `User not found`,
         });
       });
   });
