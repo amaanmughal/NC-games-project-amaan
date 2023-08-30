@@ -200,3 +200,31 @@ exports.fetchUsername = (username) => {
       return user.rows[0];
     });
 };
+
+///// TICKET 18 /////
+
+exports.fetchCommentToChangeVote = (id, inc_votes) => {
+  let newNum = parseInt(id);
+  if (Number.isNaN(newNum) || inc_votes === undefined) {
+    return Promise.reject({
+      status: 400,
+      msg: `Bad request`,
+    });
+  }
+  return db
+    .query(`SELECT * FROM comments WHERE comment_id = $1;`, [id])
+    .then(({ rows }) => {
+      if (rows[0] === undefined) {
+        return Promise.reject({
+          status: 404,
+          msg: `Not found`,
+        });
+      }
+      let queryStr =
+        "UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;";
+      let queryVal = [inc_votes, id];
+      return db.query(queryStr, queryVal).then(({ rows }) => {
+        return rows[0];
+      });
+    });
+};

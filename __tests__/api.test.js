@@ -482,3 +482,96 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+
+/////Ticket 18 /////
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200 - updated review with increased votes if positive number", () => {
+    const updateCommentVotes = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/comments/6")
+      .send(updateCommentVotes)
+      .expect(200)
+      .then((rows) => {
+        let finalRow = rows.body.comment;
+
+        expect(finalRow).toMatchObject({
+          comment_id: 6,
+          body: "Not sure about dogs, but my cat likes to get involved with board games, the boxes are their particular favourite",
+          review_id: 3,
+          author: "philippaclaire9",
+          votes: 11,
+          created_at: "2021-03-27T19:49:48.110Z",
+        });
+      });
+  });
+  test("200 - updated review with decreased votes if negative number", () => {
+    const updateCommentVotes = {
+      inc_votes: -1,
+    };
+    return request(app)
+      .patch("/api/comments/6")
+      .send(updateCommentVotes)
+      .expect(200)
+      .then((rows) => {
+        let finalRow = rows.body.comment;
+
+        expect(finalRow).toMatchObject({
+          comment_id: 6,
+          body: "Not sure about dogs, but my cat likes to get involved with board games, the boxes are their particular favourite",
+          review_id: 3,
+          author: "philippaclaire9",
+          votes: 9,
+          created_at: "2021-03-27T19:49:48.110Z",
+        });
+      });
+  });
+  test("400 - invalid id", () => {
+    const updateCommentVotes = {
+      inc_votes: 12,
+    };
+    return request(app)
+      .patch("/api/comments/nonsense")
+      .send(updateCommentVotes)
+      .expect(400)
+      .then((res) => {
+        let parsedRes = JSON.parse(res.text);
+        expect(parsedRes).toEqual({
+          msg: `Bad request`,
+        });
+      });
+  });
+  test("400 - incorrect body passed", () => {
+    const updateCommentVotes = {
+      name: "bobby-lee",
+    };
+    return request(app)
+      .patch("/api/comments/6")
+      .send(updateCommentVotes)
+      .expect(400)
+      .then((res) => {
+        let parsedRes = JSON.parse(res.text);
+        expect(parsedRes).toEqual({
+          msg: `Bad request`,
+        });
+      });
+  });
+  test("404 - non-existing id", () => {
+    const updateCommentVotes = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/comments/6000")
+      .send(updateCommentVotes)
+      .expect(404)
+      .then((res) => {
+        let parsedRes = JSON.parse(res.text);
+
+        expect(parsedRes).toEqual({
+          msg: `Not found`,
+        });
+      });
+  });
+});
