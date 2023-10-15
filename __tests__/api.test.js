@@ -575,3 +575,80 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   });
 });
+
+////////// POST new user //////////
+
+describe.only("POST /api/users", () => {
+  test("201 - POST user object creates new user", () => {
+    const newUser = {
+      username: "amaanZilla",
+      name: "amaan mughal",
+      avatar_url:
+        "https://www.google.com/url?sa=i&url=https%3A%2F%2Fm.majorgeeks.com%2Fnews%2Fstory%2Frandom_photo_going_to_work.html&psig=AOvVaw3MIUvhPqGYcbQ2kGCczOVe&ust=1697448004117000&source=images&cd=vfe&opi=89978449&ved=0CBAQjRxqGAoTCKiKktzc94EDFQAAAAAdAAAAABDyAg",
+    };
+    return request(app)
+      .post("/api/users")
+      .send(newUser)
+      .expect(201)
+      .then((rows) => {
+        let obj = rows.body.user;
+        expect(obj.username).toBe("amaanZilla");
+        expect(obj.name).toBe("amaan mughal");
+        expect(obj.avatar_url).toBe(
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fm.majorgeeks.com%2Fnews%2Fstory%2Frandom_photo_going_to_work.html&psig=AOvVaw3MIUvhPqGYcbQ2kGCczOVe&ust=1697448004117000&source=images&cd=vfe&opi=89978449&ved=0CBAQjRxqGAoTCKiKktzc94EDFQAAAAAdAAAAABDyAg"
+        );
+      });
+  });
+  test("201 - POST user uses default avatar_url", () => {
+    const newUser = {
+      username: "amaanZilla",
+      name: "amaan mughal",
+    };
+    return request(app)
+      .post("/api/users")
+      .send(newUser)
+      .expect(201)
+      .then((rows) => {
+        let obj = rows.body.user;
+        expect(obj.username).toBe("amaanZilla");
+        expect(obj.name).toBe("amaan mughal");
+        expect(obj.avatar_url).toBe(
+          "https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
+        );
+      });
+  });
+  test("404 - Post user does not have valid name", () => {
+    const newUser = {
+      username: "",
+    };
+
+    return request(app)
+      .post("/api/users")
+      .send(newUser)
+      .expect(404)
+      .then((res) => {
+        let parsedRes = JSON.parse(res.text);
+
+        expect(parsedRes).toEqual({
+          msg: `Not found`,
+        });
+      });
+  });
+  test("404 - Post user does not have valid username", () => {
+    const newUser = {
+      name: "",
+    };
+
+    return request(app)
+      .post("/api/users")
+      .send(newUser)
+      .expect(404)
+      .then((res) => {
+        let parsedRes = JSON.parse(res.text);
+
+        expect(parsedRes).toEqual({
+          msg: `Not found`,
+        });
+      });
+  });
+});

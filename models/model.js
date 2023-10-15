@@ -185,6 +185,35 @@ exports.fetchUsers = () => {
   });
 };
 
+///// POST USER /////
+
+exports.postUser = (
+  username,
+  name,
+  avatar_url = "https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
+) => {
+  if (username === "" || username === undefined) {
+    return Promise.reject({
+      status: 404,
+      msg: `Not found`,
+    });
+  }
+  if (name === "" || name === undefined) {
+    return Promise.reject({
+      status: 404,
+      msg: `Not found`,
+    });
+  }
+  return db
+    .query(
+      "INSERT INTO users (username, name, avatar_url) VALUES ($1, $2, $3) RETURNING *;",
+      [username, name, avatar_url]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
 ///// TICKET 11 /////
 
 exports.fetchUsername = (username) => {
