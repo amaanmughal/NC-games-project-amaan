@@ -157,6 +157,14 @@ describe("GET /api/reviews", () => {
         });
       });
   });
+  test("status 200 - return all categories", () => {
+    return request(app)
+      .get("/api/reviews?category=all")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews.length).toBe(13);
+      });
+  });
 });
 
 ///// TICKET 6 /////
@@ -282,7 +290,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
   });
   test("404 - username does not exist", () => {
     const newComment = {
-      username: "yippie",
+      username: "bibi",
       body: "book was cool",
     };
     return request(app)
@@ -578,7 +586,7 @@ describe("PATCH /api/comments/:comment_id", () => {
 
 ////////// POST new user //////////
 
-describe.only("POST /api/users", () => {
+describe("POST /api/users", () => {
   test("201 - POST user object creates new user", () => {
     const newUser = {
       username: "amaanZilla",
@@ -603,6 +611,7 @@ describe.only("POST /api/users", () => {
     const newUser = {
       username: "amaanZilla",
       name: "amaan mughal",
+      avatar_url: "",
     };
     return request(app)
       .post("/api/users")
