@@ -59,7 +59,7 @@ exports.fetchReviewArray = (
 
   let queryStr = `SELECT reviews.review_id, reviews.title, reviews.owner, reviews.category, reviews.created_at, reviews.review_img_url, reviews.designer, COUNT(comments.comment_id) AS comment_count, reviews.votes FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id`;
 
-  if (category) {
+  if (category && category !== "all") {
     queryStr += ` WHERE reviews.category = $1`;
     queryValues.push(category);
   }
@@ -106,22 +106,33 @@ exports.insertComment = (id, author, body) => {
       msg: `Bad request`,
     });
   }
-  return db
-    .query(`SELECT * FROM reviews WHERE review_id = $1;`, [id])
-    .then(({ rows }) => {
-      if (rows[0] === undefined || rows[0].owner !== author) {
-        return Promise.reject({
-          status: 404,
-          msg: `Not found`,
-        });
-      }
-      let queryStr =
-        "INSERT INTO comments (body, review_id, author) VALUES ($1, $2, $3) RETURNING *;";
-      let queryVal = [body, id, author];
-      return db.query(queryStr, queryVal).then(({ rows }) => {
-        return rows[0];
+  return db.query(`SELECT * FROM users`).then(({ rows }) => {
+    let filteredUsers = rows.filter((user) => user.username === author);
+
+    if (filteredUsers[0] === undefined) {
+      return Promise.reject({
+        status: 404,
+        msg: `Not found`,
       });
-    });
+    }
+
+    return db
+      .query(`SELECT * FROM reviews WHERE review_id = $1;`, [id])
+      .then(({ rows }) => {
+        if (rows[0] === undefined) {
+          return Promise.reject({
+            status: 404,
+            msg: `Not found`,
+          });
+        }
+        let queryStr =
+          "INSERT INTO comments (body, review_id, author) VALUES ($1, $2, $3) RETURNING *;";
+        let queryVal = [body, id, author];
+        return db.query(queryStr, queryVal).then(({ rows }) => {
+          return rows[0];
+        });
+      });
+  });
 };
 
 //// TICKET 8 ////
@@ -203,6 +214,9 @@ exports.postUser = (
       status: 404,
       msg: `Not found`,
     });
+  }
+  if (avatar_url === "") {
+    avatar_url = "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
   }
   return db
     .query(
